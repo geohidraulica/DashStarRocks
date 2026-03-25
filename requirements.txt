@@ -7,3 +7,4 @@ mysql-connector-python
 plotly
 flask
 gunicorn
+pytz
