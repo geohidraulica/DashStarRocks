@@ -8,7 +8,7 @@ load_dotenv(dotenv_path)
 
 def get_engine():
     """
-    Crea un engine SQLAlchemy para conectarse a MySQL.
+    Crea un engine SQLAlchemy para conectarse a StarRocks/MySQL.
     """
     user = os.getenv("DB_USER")
     password = os.getenv("DB_PASSWORD")
@@ -18,5 +18,14 @@ def get_engine():
 
     # Conector MySQL + SQLAlchemy
     conn_str = f"mysql+mysqlconnector://{user}:{password}@{host}:{port}/{db}"
-    engine = create_engine(conn_str, echo=False)
+    
+    # SOLO AGREGAR ESTOS PARÁMETROS:
+    engine = create_engine(
+        conn_str, 
+        echo=False,
+        connect_args={
+            'connect_timeout': 10,      # Timeout de 10 segundos
+            'use_pure': True            # Usar implementación pura de Python
+        }
+    )
     return engine

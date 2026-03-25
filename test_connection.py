@@ -1,21 +1,44 @@
-from database.connection import get_connection
+# test_connection.py
+from database.connection import get_engine
+from sqlalchemy import text
 
-try:
-    conn = get_connection()
+def test_connection():
+    """
+    Prueba la conexión usando tu archivo connection.py
+    """
+    print("=" * 50)
+    print("PROBANDO CONEXIÓN A STARROCKS")
+    print("=" * 50)
+    
+    try:
+        print("\n🔄 Creando engine...")
+        engine = get_engine()
+        
+        print("🔄 Intentando conectar...")
+        with engine.connect() as conn:
+            print("✅ Conexión establecida")
+            
+            # Probar consulta simple
+            result = conn.execute(text("SELECT VERSION()"))
+            version = result.fetchone()
+            
+            print(f"\n✅ CONEXIÓN EXITOSA")
+            print(f"   Versión: {version[0]}")
+            print(f"   Base de datos: fuxion_dw")
+            
+            return True
+            
+    except Exception as e:
+        print(f"\n❌ ERROR DE CONEXIÓN")
+        print(f"   {e}")
+        return False
 
-    if conn.is_connected():
-        print("✅ Conexión exitosa a MySQL")
-
-    conn.close()
-
-except Exception as e:
-    print("❌ Error de conexión:", e)
-
-
-from services import compras_service
-
-try:
-    df_compras = compras_service.get_fact_compras()
-    print("✅ Consulta exitosa. Número de registros:", len(df_compras))
-except Exception as e:
-    print("❌ Error al ejecutar consulta:", e)
+if __name__ == "__main__":
+    resultado = test_connection()
+    
+    print("\n" + "=" * 50)
+    if resultado:
+        print("RESULTADO: CONEXIÓN EXITOSA ✅")
+    else:
+        print("RESULTADO: CONEXIÓN FALLIDA ❌")
+    print("=" * 50)
