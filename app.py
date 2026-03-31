@@ -2,6 +2,8 @@
 import dash
 from dash import html, dcc, Input, Output, callback, State
 import dash_bootstrap_components as dbc
+from flask import request
+from global_state import DAG_STATUS
 
 # Crear la app
 app = dash.Dash(
@@ -19,15 +21,26 @@ app = dash.Dash(
 
 server = app.server
 
+# --- ENDPOINT AIRFLOW CALLBACK ---
+@server.route("/airflow-callback", methods=["POST"])
+def airflow_callback():
+    data = request.json
+
+    print("Notificación recibida:", data)
+    
+    DAG_STATUS.update(data)
+    
+    return {"status": "ok"}
+
 # --- CONFIGURACIÓN DE PÁGINAS CON ICONOS ---
 PAGES = [
-    {"name": "Compras", "href": "/compras", "id": "link-compras", "icon": "fas fa-shopping-cart"},
-    {"name": "Ventas", "href": "/ventas", "id": "link-ventas", "icon": "fas fa-chart-line"},
-    {"name": "Inventario", "href": "/inventario", "id": "link-inventario", "icon": "fas fa-boxes"},
-    {"name": "Clientes", "href": "/clientes", "id": "link-clientes", "icon": "fas fa-users"},
-    {"name": "Proveedores", "href": "/proveedores", "id": "link-proveedores", "icon": "fas fa-truck"},
-    {"name": "Reportes", "href": "/reportes", "id": "link-reportes", "icon": "fas fa-file-alt"},
-    {"name": "Configuración", "href": "/configuracion", "id": "link-configuracion", "icon": "fas fa-cog"},
+    # {"name": "Compras", "href": "/compras", "id": "link-compras", "icon": "fas fa-shopping-cart"},
+    {"name": "Mantenimiento", "href": "/mantenimiento", "id": "link-mantenimiento", "icon": "fas fa-gear"},
+    # {"name": "Inventario", "href": "/inventario", "id": "link-inventario", "icon": "fas fa-boxes"},
+    # {"name": "Clientes", "href": "/clientes", "id": "link-clientes", "icon": "fas fa-users"},
+    # {"name": "Proveedores", "href": "/proveedores", "id": "link-proveedores", "icon": "fas fa-truck"},
+    # {"name": "Reportes", "href": "/reportes", "id": "link-reportes", "icon": "fas fa-file-alt"},
+    # {"name": "Configuración", "href": "/configuracion", "id": "link-configuracion", "icon": "fas fa-cog"},
 ]
 
 # --- LAYOUT PRINCIPAL ---
@@ -222,4 +235,4 @@ def close_mobile_sidebar(*args):
     return False
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8050, debug=False)
+    app.run(debug=True, host="0.0.0.0", port=8050)

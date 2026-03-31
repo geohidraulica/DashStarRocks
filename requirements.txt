@@ -8,3 +8,5 @@ plotly
 flask
 gunicorn
 pytz
+xlsxwriter 
+openpyxl
